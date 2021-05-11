@@ -1,18 +1,39 @@
+import { useContext } from 'react';
 import Modal from '../UI/Modal';
 import classes from './Cart.module.css';
+import CartItem from './CartItem';
+import CartContext from '../../context/cart-context';
 
 const Cart = (props) => {
+	const cartCtx = useContext(CartContext);
+
+	const totalAmount = `${cartCtx.totalAmount.toFixed(2)}`;
+	const hasItems = cartCtx.items.length > 0;
+
+	const cartItemRemoveHandler = (id) => {};
+
+	const cartItemAddHandler = (item) => {};
+
 	const cardItems = (
 		<ul className={classes['cart-items']}>
-			{[
-				{
-					id: 'm1',
-					name: 'Sushi',
-					description: 'Finest fish and veggies',
-					price: 22.99,
-				},
-			].map((item) => (
-				<li>{item.name}</li>
+			{cartCtx.items.map((item) => (
+				<CartItem
+					key={item.id}
+					name={item.name}
+					amount={item.amount}
+					price={item.price}
+					/* Bind Method-
+					1. Binds an object to a function
+					2. Reference it using this in the function */
+
+					/* let bound = func.bind(context, [arg1], [arg2], ...);
+					fixing null as the context and item.id as the first argument.
+					Further arguments are passed “as is”. (here there is only one
+					argument in the function so no need for further arguments)
+					Reference- https://javascript.info/bind */
+					onRemove={cartItemRemoveHandler.bind(null, item.id)}
+					onAdd={cartItemAddHandler.bind(null, item)}
+				/>
 			))}
 		</ul>
 	);
@@ -22,13 +43,15 @@ const Cart = (props) => {
 			{cardItems}
 			<div className={classes.total}>
 				<span>Total Amount</span>
-				<span>29.99</span>
+				<span>{totalAmount}</span>
 			</div>
 			<div className={classes.actions}>
-				<button className={classes['button--alt']} onClick={props.onClose}>
+				<button
+					className={classes['button--alt']}
+					onClick={props.onClose}>
 					Close
 				</button>
-				<button className={classes.button}>Order</button>
+				{hasItems && <button className={classes.button}>Order</button>}
 			</div>
 		</Modal>
 	);
