@@ -8,6 +8,9 @@ import Checkout from './Checkout';
 const Cart = (props) => {
 	const cartCtx = useContext(CartContext);
 	const [isCheckout, setIsCheckout] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [submissionError, setSubmissionError] = useState(false);
+	const [didSubmit, setDidSubmit] = useState(false);
 
 	const totalAmount = `${cartCtx.totalAmount.toFixed(2)}`;
 	const hasItems = cartCtx.items.length > 0;
@@ -37,6 +40,28 @@ const Cart = (props) => {
 		</div>
 	);
 
+	const submitOrderHandler = async (userData) => {
+		setIsSubmitting(true);
+		try {
+			const response = await fetch(process.env.REACT_APP_FIREBASE_POST_KEY, {
+				method: 'POST',
+				body: JSON.stringify({
+					user: userData,
+					orderedItems: cartCtx.items,
+				}),
+			});
+			if (!response.ok) {
+				throw new Error('Error in submitting form!');
+			}
+		} catch (err) {
+			setSubmissionError(err.message);
+			setIsSubmitting(false);
+			return;
+		}
+		setIsSubmitting(false);
+		setDidSubmit(true);
+	};
+
 	const cardItems = (
 		<ul className={classes['cart-items']}>
 			{cartCtx.items.map((item) => (
@@ -61,15 +86,41 @@ const Cart = (props) => {
 		</ul>
 	);
 
-	return (
-		<Modal onClose={props.onClose}>
+	const cartModalContent = (
+		<>
 			{cardItems}
 			<div className={classes.total}>
 				<span>Total Amount</span>
 				<span>{totalAmount}</span>
 			</div>
-			{isCheckout && <Checkout onCancel={props.onClose} />}
+			{isCheckout && (
+				<Checkout onConfirm={submitOrderHandler} onCancel={props.onClose} />
+			)}
 			{!isCheckout && modalActions}
+		</>
+	);
+
+	const isSubmittingModalContent = <p>Sending order data!</p>;
+
+	const didSubmitModalContent = <p>Successfully sent order data!</p>;
+
+	const errorInSubmitModalContent = (
+		<>
+			<p>Error in submission, try again!</p>
+			<div className={classes.actions}>
+				<button className={classes.button} onClick={props.onClose}>
+					Close
+				</button>
+			</div>
+		</>
+	);
+
+	return (
+		<Modal onClose={props.onClose}>
+			{submissionError && errorInSubmitModalContent}
+			{!isSubmitting && !submissionError && !didSubmit && cartModalContent}
+			{isSubmitting && !submissionError && isSubmittingModalContent}
+			{!isSubmitting && !submissionError && didSubmit && didSubmitModalContent}
 		</Modal>
 	);
 };

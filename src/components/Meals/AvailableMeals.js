@@ -12,7 +12,7 @@ const AvailableMeals = () => {
 	useEffect(() => {
 		// a top level callback in useEffect cannot be async
 		const fetchMeals = async () => {
-			const response = await fetch(process.env.REACT_APP_FIREBASE_KEY);
+			const response = await fetch(process.env.REACT_APP_FIREBASE_GET_KEY);
 			if (!response.ok) {
 				throw new Error('Something went wrong!');
 			}
