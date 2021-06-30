@@ -60,6 +60,7 @@ const Cart = (props) => {
 		}
 		setIsSubmitting(false);
 		setDidSubmit(true);
+		cartCtx.clearCart();
 	};
 
 	const cardItems = (
@@ -102,11 +103,9 @@ const Cart = (props) => {
 
 	const isSubmittingModalContent = <p>Sending order data!</p>;
 
-	const didSubmitModalContent = <p>Successfully sent order data!</p>;
-
-	const errorInSubmitModalContent = (
+	const didSubmitModalContent = (
 		<>
-			<p>Error in submission, try again!</p>
+			<p>Successfully sent order data!</p>
 			<div className={classes.actions}>
 				<button className={classes.button} onClick={props.onClose}>
 					Close
@@ -114,6 +113,8 @@ const Cart = (props) => {
 			</div>
 		</>
 	);
+
+	const errorInSubmitModalContent = <p>Error in submission, try again!</p>;
 
 	return (
 		<Modal onClose={props.onClose}>
