@@ -1,3 +1,10 @@
+# meal.ly
+meal.ly is an online food ordering app developed using React.js for frontend and Firebase as backend.
+
+## Demo-
+![meally-Google-Chrome-2022-02-10](https://user-images.githubusercontent.com/54665036/153463709-57a21ce0-d5a1-4a98-b65b-164c92cfa8e5.gif)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
