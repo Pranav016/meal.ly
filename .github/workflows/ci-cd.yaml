@@ -1,0 +1,50 @@
+name: CI-CD
+
+on: 
+  push:
+    branches: ["master"]
+    paths:
+      - '!**.md'
+
+jobs:
+  ci-cd:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - name: Get yarn cache directory path
+          id: yarn-cache-dir-path
+          run: echo "::set-output name=dir::$(yarn cache dir)"
+        - name: cache lookup
+          uses: actions/cache@v2
+          id: yarn-cache
+          with:
+            path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-yarn-
+        - name: setup node
+          uses: actions/setup-node@v2
+          with:
+            node-version: "16.x"
+        - name: install dependencies
+          run: yarn
+        - name: ci
+          run: yarn lint-check
+        - name: conflicts lint-prettier
+          run: yarn run eslint-prettier-check
+        - run: yarn lint
+        - name: build
+          run: yarn run build
+        - name: deploy to netlify
+          uses: nwtgck/actions-netlify@v1.2
+          with: 
+            publish-dir: "./build"
+            production-branch: "master"
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            deploy-message: "${{ github.event.head_commit.message }}"
+            enable-pull-request-comment: false
+            enable-commit-comment: true
+          env:
+            NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+            NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          timeout-minutes: 5
