@@ -26,10 +26,6 @@ jobs:
             node-version: "16.x"
         - name: install dependencies
           run: yarn
-        - name: ci
-          run: yarn lint-check
-        - name: conflicts lint-prettier
-          run: yarn run eslint-prettier-check
         - run: yarn lint
         - name: build
           run: yarn run build
@@ -45,4 +41,4 @@ jobs:
           env:
             NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
             NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          timeout-minutes: 5
+          timeout-minutes: 20
