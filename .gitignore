@@ -1,5 +1,6 @@
 node_modules
 .eslintcache
 .env
+build
 # Local Netlify folder
 .netlify
